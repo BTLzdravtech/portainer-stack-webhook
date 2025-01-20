@@ -1,32 +1,15 @@
 import { FetchError, RequiredEnvError } from "./errors";
 
-export async function createPortainerApi() {
+export async function createPortainerApi(apiKey: string) {
   const baseUrl = process.env.BASE_URL;
   if (!baseUrl) throw RequiredEnvError(`BASE_URL`);
-  const username = process.env.USERNAME;
-  if (!username) throw RequiredEnvError(`USERNAME`);
-  const password = process.env.PASSWORD;
-  if (!password) throw RequiredEnvError(`PASSWORD`);
 
   const checkResponse = (response: Response, expectedStatus = 200) => {
     if (response.status !== expectedStatus) throw new FetchError(response);
   };
 
-  const login = async (): Promise<PortainerLoginResponse> => {
-    const res = await fetch(`${baseUrl}/auth`, {
-      body: JSON.stringify({ username, password }),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (res.status !== 200) throw new FetchError(res);
-    return await res.json<PortainerLoginResponse>();
-  };
-
-  const { jwt } = await login();
   const authHeaders = {
-    Authorization: `Bearer ${jwt}`,
+    'X-API-Key': apiKey,
   };
 
   return {
@@ -85,10 +68,6 @@ export async function createPortainerApi() {
       checkResponse(res);
     },
   };
-}
-
-export interface PortainerLoginResponse {
-  jwt: string;
 }
 
 export interface PortainerStack {

@@ -40,3 +40,7 @@ export class FetchError extends Error {
 export function RequiredEnvError(key: string) {
   return new ApiError(500, `Required environment variable missing: ${key}`);
 }
+
+export function RequiredApiKeyError() {
+  return new ApiError(500, "Required Portainer API key header missing");
+}
