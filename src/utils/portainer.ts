@@ -45,7 +45,7 @@ export async function createPortainerApi(apiKey: string) {
       options: {
         endpointId: number;
         prune: boolean;
-        pullImage: boolean;
+        repullImageAndRedeploy: boolean;
         stackFileContent: string;
       }
     ): Promise<void> {
@@ -56,7 +56,7 @@ export async function createPortainerApi(apiKey: string) {
         method: "PUT",
         body: JSON.stringify({
           prune: options.prune,
-          pullImage: options.pullImage,
+          repullImageAndRedeploy: options.repullImageAndRedeploy,
           stackFileContent: options.stackFileContent,
         }),
         headers: {

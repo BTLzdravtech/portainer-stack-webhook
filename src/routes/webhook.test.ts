@@ -71,7 +71,7 @@ describe("webhook route", () => {
         endpointId,
         stackFileContent,
         prune: false,
-        pullImage: true,
+        repullImageAndRedeploy: true,
       },
     ]);
   });
