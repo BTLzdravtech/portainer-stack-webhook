@@ -12,6 +12,9 @@ export default defineRoute({
 
   handler: async (ctx, idStr: string) => {
     const id = Number(idStr);
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new ApiError(400, `Invalid stack id: "${idStr}"`);
+    }
     const log = createLogger(`stack ${id}`);
     const start = Date.now();
     const intervalMs = Number(process.env.POLL_INTERVAL_MS) || 5_000;

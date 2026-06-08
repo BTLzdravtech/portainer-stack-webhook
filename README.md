@@ -18,9 +18,15 @@ services:
       POLL_INTERVAL_MS: 5000                      # Optional, status poll interval, default 5s
       POLL_TIMEOUT_MS: 1800000                    # Optional, give up after this long, default 30m (0 = no timeout)
       LOG_LEVEL: info                             # Optional, debug|info|warn|error|silent, default info
+    stop_grace_period: 35m                        # Optional, let in-flight redeploys finish on restart
 ```
 
-The service logs each request and the full redeploy lifecycle — trigger, update accepted, every status poll, and the final outcome — as colored, timestamped lines. Use `LOG_LEVEL` to control verbosity (`debug` adds per-request entry lines; `warn` hides the routine poll chatter). The `X-API-Key` is never logged.
+The service logs each request and the full redeploy lifecycle — trigger, update accepted, every status poll, and the final outcome — as colored, timestamped lines. Use `LOG_LEVEL` to control verbosity (`debug` adds per-request entry lines; `warn` hides the routine poll chatter). Colors are emitted only on a TTY and disabled when `NO_COLOR` is set, so aggregated logs stay plain text. The `X-API-Key` is never logged.
+
+### Production notes
+
+- **Health check:** `GET /health` returns `200 { "status": "ok", "version" }` and requires no API key. The Docker image ships a built-in `HEALTHCHECK` that polls it.
+- **Graceful shutdown:** on `SIGTERM`/`SIGINT` the server stops accepting new connections and waits for in-flight redeploys to finish. Because a redeploy can run for many minutes, set the container's `stop_grace_period` (compose) / `terminationGracePeriodSeconds` (k8s) at least as high as `POLL_TIMEOUT_MS`, or in-flight deploys will be `SIGKILL`ed on restart.
 
 Authentication is per-request: every request must include an `X-API-Key` header containing a [Portainer API access token](https://docs.portainer.io/api/access). The token is forwarded to your Portainer instance, so the webhook performs whatever actions that token is allowed to.
 

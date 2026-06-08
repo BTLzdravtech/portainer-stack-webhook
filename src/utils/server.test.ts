@@ -44,6 +44,16 @@ describe("Server Utils", () => {
       expect(mockHandler.mock.calls).toHaveLength(0);
     });
 
+    it("serves /health without an API key", async () => {
+      const response = await server.fetch(
+        new Request("http://localhost/health"),
+      );
+
+      expect(response.status).toEqual(200);
+      expect(await response.json()).toMatchObject({ status: "ok" });
+      expect(mockHandler.mock.calls).toHaveLength(0);
+    });
+
     it("should execute the route handler when requesting a valid route", async () => {
       const request = new Request("http://localhost/api/test", {
         headers: { "X-API-Key": "test-api-key" },

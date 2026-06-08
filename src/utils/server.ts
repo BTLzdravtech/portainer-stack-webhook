@@ -1,7 +1,9 @@
+import { version } from "../../package.json";
 import type { Ctx } from "./context";
 import { ApiError, FetchError, RequiredApiKeyError } from "./errors";
 import { createLogger } from "./log";
 import type { PortainerApi } from "./portainer";
+import { JsonResponse } from "./responses";
 import type { Route } from "./routes";
 
 export function startServer(options: {
@@ -18,6 +20,12 @@ export function startServer(options: {
       // Only method + path are logged here — never headers (which carry the API key).
       const reqLine = `${request.method} ${url.pathname}`;
       log.debug(reqLine);
+
+      // Unauthenticated liveness probe (for Docker/orchestrator health checks).
+      if (request.method === "GET" && url.pathname === "/health") {
+        return new JsonResponse(200, { status: "ok", version });
+      }
+
       try {
         const apiKey = request.headers.get("X-API-Key");
         if (!apiKey) throw RequiredApiKeyError();
@@ -62,6 +70,10 @@ export function startServer(options: {
         );
         throw err;
       }
+    },
+    // Last-resort handler for anything thrown out of fetch().
+    error() {
+      return new JsonResponse(500, { message: "Internal Server Error" });
     },
   });
 }

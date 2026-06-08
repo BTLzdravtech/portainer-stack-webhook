@@ -1,8 +1,18 @@
-export const bold = (str: string) => `\x1b[1m${str}\x1b[0m`;
-export const dim = (str: string) => `\x1b[2m${str}\x1b[0m`;
-export const red = (str: string) => `\x1b[31m${str}\x1b[0m`;
-export const green = (str: string) => `\x1b[32m${str}\x1b[0m`;
-export const yellow = (str: string) => `\x1b[33m${str}\x1b[0m`;
-export const blue = (str: string) => `\x1b[34m${str}\x1b[0m`;
-export const violet = (str: string) => `\x1b[35m${str}\x1b[0m`;
-export const cyan = (str: string) => `\x1b[36m${str}\x1b[0m`;
+// ANSI color is emitted only when attached to a TTY (or forced), and never
+// when NO_COLOR is set — so piped/aggregated logs (e.g. `docker logs`) stay
+// plain text. See https://no-color.org.
+const enabled =
+  !process.env.NO_COLOR &&
+  (Boolean(process.env.FORCE_COLOR) || Boolean(process.stdout.isTTY));
+
+const wrap = (code: number) => (str: string) =>
+  enabled ? `\x1b[${code}m${str}\x1b[0m` : str;
+
+export const bold = wrap(1);
+export const dim = wrap(2);
+export const red = wrap(31);
+export const green = wrap(32);
+export const yellow = wrap(33);
+export const blue = wrap(34);
+export const violet = wrap(35);
+export const cyan = wrap(36);

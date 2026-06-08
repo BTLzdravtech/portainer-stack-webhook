@@ -47,6 +47,18 @@ describe("webhook route", () => {
     expect(webhook.handler(ctx, "123")).rejects.toBe(err);
   });
 
+  it("should reject an invalid stack id with 400", async () => {
+    let err: ApiError | undefined;
+    try {
+      await webhook.handler(ctx, "abc");
+    } catch (e) {
+      err = e as ApiError;
+    }
+
+    expect(err?.status).toBe(400);
+    expect(portainer.getStack.mock.calls).toHaveLength(0);
+  });
+
   it("should fail if the update fails", async () => {
     const err = Error("Some error");
 
