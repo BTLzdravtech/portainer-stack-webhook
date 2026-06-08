@@ -21,6 +21,7 @@ const server = startServer({
 describe("Server Utils", () => {
   beforeEach(() => {
     mockHandler.mockReset();
+    process.env.LOG_LEVEL = "silent";
   });
 
   afterAll(() => {

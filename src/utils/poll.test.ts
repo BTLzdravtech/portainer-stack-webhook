@@ -137,4 +137,26 @@ describe("waitForStackDeploy", () => {
     expect(thrown).toBe(err);
     expect(getStack.mock.calls).toHaveLength(3); // 2 tolerated + 1 that exceeds
   });
+
+  it("reports progress and retries through the logger", async () => {
+    const getStack = mock<(id: number) => Promise<PortainerStack>>();
+    getStack
+      .mockRejectedValueOnce(new Error("blip"))
+      .mockResolvedValueOnce(stack(StackStatus.Active));
+    const logger = {
+      debug: mock(() => {}),
+      info: mock(() => {}),
+      warn: mock(() => {}),
+      error: mock(() => {}),
+    };
+
+    await waitForStackDeploy(stack(StackStatus.Deploying), getStack, {
+      ...baseOpts,
+      maxConsecutiveErrors: 2,
+      logger,
+    });
+
+    expect(logger.warn).toHaveBeenCalledTimes(1); // transient failure
+    expect(logger.info).toHaveBeenCalledTimes(1); // the successful poll
+  });
 });

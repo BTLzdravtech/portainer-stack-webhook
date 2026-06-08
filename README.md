@@ -17,7 +17,10 @@ services:
       PORT: 3000                                  # Optional, default 3000
       POLL_INTERVAL_MS: 5000                      # Optional, status poll interval, default 5s
       POLL_TIMEOUT_MS: 1800000                    # Optional, give up after this long, default 30m (0 = no timeout)
+      LOG_LEVEL: info                             # Optional, debug|info|warn|error|silent, default info
 ```
+
+The service logs each request and the full redeploy lifecycle — trigger, update accepted, every status poll, and the final outcome — as colored, timestamped lines. Use `LOG_LEVEL` to control verbosity (`debug` adds per-request entry lines; `warn` hides the routine poll chatter). The `X-API-Key` is never logged.
 
 Authentication is per-request: every request must include an `X-API-Key` header containing a [Portainer API access token](https://docs.portainer.io/api/access). The token is forwarded to your Portainer instance, so the webhook performs whatever actions that token is allowed to.
 

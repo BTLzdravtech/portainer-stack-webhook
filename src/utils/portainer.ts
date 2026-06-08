@@ -83,6 +83,22 @@ export const StackStatus = {
   Error: 4,
 } as const;
 
+/** Human-readable name for a stack status, for logging. */
+export function stackStatusName(status?: number): string {
+  switch (status) {
+    case StackStatus.Active:
+      return "active";
+    case StackStatus.Inactive:
+      return "inactive";
+    case StackStatus.Deploying:
+      return "deploying";
+    case StackStatus.Error:
+      return "error";
+    default:
+      return status === undefined ? "unknown" : String(status);
+  }
+}
+
 export interface PortainerStack {
   Id: number;
   Name: string;

@@ -35,6 +35,7 @@ describe("webhook route", () => {
     // Poll near-instantly during tests; transitions are driven by mock chains.
     process.env.POLL_INTERVAL_MS = "1";
     process.env.POLL_TIMEOUT_MS = "10000";
+    process.env.LOG_LEVEL = "silent";
   });
 
   it("should fail if the stack doesn't exist", async () => {

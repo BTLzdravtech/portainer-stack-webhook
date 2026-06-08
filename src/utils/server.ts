@@ -1,5 +1,6 @@
 import type { Ctx } from "./context";
 import { ApiError, FetchError, RequiredApiKeyError } from "./errors";
+import { createLogger } from "./log";
 import type { PortainerApi } from "./portainer";
 import type { Route } from "./routes";
 
@@ -12,8 +13,12 @@ export function startServer(options: {
     port: options.port,
     idleTimeout: 255,
     async fetch(request, server) {
+      const log = createLogger();
+      const url = new URL(request.url, "http://localhost");
+      // Only method + path are logged here — never headers (which carry the API key).
+      const reqLine = `${request.method} ${url.pathname}`;
+      log.debug(reqLine);
       try {
-        const url = new URL(request.url, "http://localhost");
         const apiKey = request.headers.get("X-API-Key");
         if (!apiKey) throw RequiredApiKeyError();
         for (const route of options.routes) {
@@ -25,7 +30,9 @@ export function startServer(options: {
               disableTimeout: () => server.timeout(request, 0),
             };
             const response = await route.handler(ctx, ...matches.slice(1));
-            return response ?? new Response();
+            const res = response ?? new Response();
+            log.info(`${reqLine} → ${res.status}`);
+            return res;
           }
         }
 
@@ -36,17 +43,23 @@ export function startServer(options: {
               .slice(2, -2)
               .replaceAll("\\", "")}`,
         );
-        throw new ApiError(
-          404,
-          `"${request.method} ${url.pathname}" did not match any endpoints`,
-          { routes: available },
-        );
+        throw new ApiError(404, `"${reqLine}" did not match any endpoints`, {
+          routes: available,
+        });
       } catch (err) {
-        // Return responses for handled errors
-        if (err instanceof ApiError) return err.toResponse();
-        if (err instanceof FetchError) return err.toResponse();
+        // Return responses for handled errors, logging them centrally.
+        if (err instanceof ApiError || err instanceof FetchError) {
+          const res = err.toResponse();
+          const line = `${reqLine} → ${res.status} ${err.message}`;
+          if (res.status >= 500) log.error(line);
+          else log.warn(line);
+          return res;
+        }
 
         // Throw error on unknown errors
+        log.error(
+          `${reqLine} → unhandled error: ${err instanceof Error ? err.message : String(err)}`,
+        );
         throw err;
       }
     },

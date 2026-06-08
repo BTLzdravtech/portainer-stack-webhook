@@ -43,6 +43,8 @@ A framework-less HTTP server built directly on `Bun.serve`. The whole request li
 
 **Errors** (`src/utils/errors.ts`): `ApiError` and `FetchError` both expose `toResponse()`. `server.ts` catches them centrally and converts to HTTP responses; any other (unexpected) error is re-thrown. Use these classes rather than returning error responses ad hoc. `JsonResponse` (`responses.ts`) is the standard JSON response helper.
 
+**Logging** (`src/utils/log.ts`): `createLogger(scope?)` returns a leveled, timestamped, colored logger (built on `colors.ts`); verbosity via `LOG_LEVEL` (debug|info|warn|error|silent, default info, resolved per-call). `server.ts` logs every request as `METHOD path → status` and centrally logs handled/unhandled errors (only method + path — never the `X-API-Key`). The webhook handler logs the redeploy lifecycle and passes the logger into `waitForStackDeploy`, which logs each poll/retry/timeout (the helper stays pure when no `logger` is injected). Tests set `LOG_LEVEL=silent` to keep output clean.
+
 **Testing**: Route handlers are unit-tested by calling `handler(ctx, ...pathParams)` directly with a mocked context. `mockPortainerApi()` (`src/utils/testing.ts`) returns a Portainer client where every method is a `bun:test` mock that throws until you set a return value — drive behavior with `.mockResolvedValue` / `.mockRejectedValue`.
 
 ## Gotchas
