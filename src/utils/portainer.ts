@@ -48,7 +48,7 @@ export async function createPortainerApi(apiKey: string) {
         repullImageAndRedeploy: boolean;
         stackFileContent: string;
       },
-    ): Promise<void> {
+    ): Promise<PortainerStack> {
       const updateUrl = new URL(`${baseUrl}/stacks/${id}`);
       updateUrl.searchParams.set("endpointId", String(options.endpointId));
 
@@ -66,14 +66,29 @@ export async function createPortainerApi(apiKey: string) {
       });
 
       checkResponse(res);
+      return (await res.json()) as PortainerStack;
     },
   };
 }
+
+/**
+ * Portainer stack status values, returned on the `Status` field of a stack.
+ * Since Portainer made stack redeploy asynchronous, an update leaves the stack
+ * in `Deploying` until the background deployment finishes (`Active`/`Error`).
+ */
+export const StackStatus = {
+  Active: 1,
+  Inactive: 2,
+  Deploying: 3,
+  Error: 4,
+} as const;
 
 export interface PortainerStack {
   Id: number;
   Name: string;
   EndpointId: number;
+  /** Optional: absent on older Portainer versions and external stacks. */
+  Status?: number;
 }
 
 export interface PortainerStackFile {

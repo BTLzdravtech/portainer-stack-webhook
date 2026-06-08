@@ -15,6 +15,8 @@ services:
     environment:
       BASE_URL: https://portainer.example.com/api # Required, full URL including /api
       PORT: 3000                                  # Optional, default 3000
+      POLL_INTERVAL_MS: 5000                      # Optional, status poll interval, default 5s
+      POLL_TIMEOUT_MS: 1800000                    # Optional, give up after this long, default 30m (0 = no timeout)
 ```
 
 Authentication is per-request: every request must include an `X-API-Key` header containing a [Portainer API access token](https://docs.portainer.io/api/access). The token is forwarded to your Portainer instance, so the webhook performs whatever actions that token is allowed to.
@@ -26,6 +28,14 @@ curl -X POST \
   -H "X-API-Key: your-portainer-api-token" \
   http://localhost:3000/api/webhook/stacks/:stackId
 ```
+
+Portainer redeploys stacks asynchronously, so the webhook **waits for the redeploy to finish** before responding (polling the stack status every `POLL_INTERVAL_MS`, up to `POLL_TIMEOUT_MS`):
+
+- **`200`** with `{ "id", "name", "status" }` once the stack is active again.
+- **`502`** if the redeploy fails.
+- **`504`** if it doesn't finish within `POLL_TIMEOUT_MS`.
+
+Because pulling images can take many minutes (e.g. large or Windows images), the request can stay open for a long time. Make sure any client or reverse proxy in front of the webhook allows long-lived requests.
 
 > [!NOTE]
 > The `stackId` can be retrieved from the URL when visiting the stack details in Portainer. In the URL below, it would be `22` from the `id=22` query parameter.

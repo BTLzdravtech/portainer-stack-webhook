@@ -11,7 +11,7 @@ export function startServer(options: {
   return Bun.serve({
     port: options.port,
     idleTimeout: 255,
-    async fetch(request) {
+    async fetch(request, server) {
       try {
         const url = new URL(request.url, "http://localhost");
         const apiKey = request.headers.get("X-API-Key");
@@ -22,6 +22,7 @@ export function startServer(options: {
             const ctx: Ctx = {
               request,
               portainer: await options.createPortainerApi(apiKey),
+              disableTimeout: () => server.timeout(request, 0),
             };
             const response = await route.handler(ctx, ...matches.slice(1));
             return response ?? new Response();
