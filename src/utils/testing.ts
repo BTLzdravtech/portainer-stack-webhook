@@ -1,5 +1,5 @@
 import { mock } from "bun:test";
-import { PortainerApi } from "./portainer";
+import type { PortainerApi } from "./portainer";
 
 export function mockPortainerApi() {
   return {

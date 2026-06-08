@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r \"(.tool_input.file_path // .tool_input.path) // empty\"); b=$(basename \"$f\"); case \"$b\" in .env.template) ;; .env|.env.*) printf \"{\\\"hookSpecificOutput\\\":{\\\"hookEventName\\\":\\\"PreToolUse\\\",\\\"permissionDecision\\\":\\\"deny\\\",\\\"permissionDecisionReason\\\":\\\"Access to %s is blocked: it may contain Portainer credentials/API keys. Use .env.template instead.\\\"}}\" \"$b\" ;; esac",
+            "statusMessage": "Checking for .env access"
+          }
+        ]
+      }
+    ]
+  }
+}

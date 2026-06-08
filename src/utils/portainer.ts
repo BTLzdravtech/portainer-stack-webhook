@@ -9,7 +9,7 @@ export async function createPortainerApi(apiKey: string) {
   };
 
   const authHeaders = {
-    'X-API-Key': apiKey,
+    "X-API-Key": apiKey,
   };
 
   return {
@@ -19,7 +19,7 @@ export async function createPortainerApi(apiKey: string) {
       });
 
       checkResponse(res);
-      return await res.json<PortainerStack[]>();
+      return (await res.json()) as PortainerStack[];
     },
 
     async getStack(id: number): Promise<PortainerStack> {
@@ -28,7 +28,7 @@ export async function createPortainerApi(apiKey: string) {
       });
 
       checkResponse(res);
-      return await res.json<PortainerStack>();
+      return (await res.json()) as PortainerStack;
     },
 
     async getStackFile(id: number): Promise<PortainerStackFile> {
@@ -37,7 +37,7 @@ export async function createPortainerApi(apiKey: string) {
       });
 
       checkResponse(res);
-      return await res.json<PortainerStackFile>();
+      return (await res.json()) as PortainerStackFile;
     },
 
     async updateStack(
@@ -47,7 +47,7 @@ export async function createPortainerApi(apiKey: string) {
         prune: boolean;
         repullImageAndRedeploy: boolean;
         stackFileContent: string;
-      }
+      },
     ): Promise<void> {
       const updateUrl = new URL(`${baseUrl}/stacks/${id}`);
       updateUrl.searchParams.set("endpointId", String(options.endpointId));

@@ -4,7 +4,7 @@ export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
-    public readonly details?: Record<string, any>
+    public readonly details?: Record<string, unknown>,
   ) {
     super(message);
   }
@@ -29,7 +29,7 @@ export class ApiError extends Error {
 
 export class FetchError extends Error {
   constructor(private readonly response: Response) {
-    super("Failed to fetch: " + response.statusText);
+    super(`Failed to fetch: ${response.statusText}`);
   }
 
   toResponse() {

@@ -1,4 +1,4 @@
-import { PortainerApi } from "./portainer";
+import type { PortainerApi } from "./portainer";
 
 export interface Ctx {
   request: Request;

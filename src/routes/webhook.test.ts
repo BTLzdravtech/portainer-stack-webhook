@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
+import type { Ctx } from "../utils/context";
 import { mockPortainerApi } from "../utils/testing";
-import { Ctx } from "../utils/context";
 import webhook from "./webhook";
 
 const request = new Request("http://localhost:3000/api/webhook/stacks", {

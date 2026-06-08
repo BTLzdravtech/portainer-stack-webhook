@@ -1,12 +1,12 @@
-import { Ctx } from "./context";
+import type { Ctx } from "./context";
 import { ApiError, FetchError, RequiredApiKeyError } from "./errors";
-import { PortainerApi } from "./portainer";
-import { Route } from "./routes";
+import type { PortainerApi } from "./portainer";
+import type { Route } from "./routes";
 
 export function startServer(options: {
   port: number;
   routes: Route[];
-  createPortainerApi: (apiKey: string | null) => Promise<PortainerApi> | PortainerApi;
+  createPortainerApi: (apiKey: string) => Promise<PortainerApi> | PortainerApi;
 }) {
   return Bun.serve({
     port: options.port,
@@ -33,12 +33,12 @@ export function startServer(options: {
             `${op.method} ${op.regex
               .toString()
               .slice(2, -2)
-              .replaceAll("\\", "")}`
+              .replaceAll("\\", "")}`,
         );
         throw new ApiError(
           404,
           `"${request.method} ${url.pathname}" did not match any endpoints`,
-          { routes: available }
+          { routes: available },
         );
       } catch (err) {
         // Return responses for handled errors

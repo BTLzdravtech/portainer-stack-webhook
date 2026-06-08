@@ -1,4 +1,4 @@
-import { Ctx } from "./context";
+import type { Ctx } from "./context";
 
 export function defineRoute(route: Route): Route {
   return route;
@@ -10,6 +10,6 @@ export interface Route {
   regex: RegExp;
   handler: (
     ctx: Ctx,
-    ...pathParams: any[]
-  ) => Promise<Response | void> | Response | void;
+    ...pathParams: string[]
+  ) => Response | Promise<Response> | Promise<void>;
 }
