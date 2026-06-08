@@ -18,10 +18,10 @@ export default defineRoute({
     const log = createLogger(`stack ${id}`);
     const start = Date.now();
     const intervalMs = Number(process.env.POLL_INTERVAL_MS) || 5_000;
-    const timeoutMs =
-      process.env.POLL_TIMEOUT_MS !== undefined
-        ? Number(process.env.POLL_TIMEOUT_MS)
-        : 1_800_000; // 30 minutes; 0 disables.
+    // 30 minutes default; 0 disables. Fall back to the default if the env var
+    // is unset or not a number, so a typo never silently removes the timeout.
+    const timeoutEnv = Number(process.env.POLL_TIMEOUT_MS);
+    const timeoutMs = Number.isFinite(timeoutEnv) ? timeoutEnv : 1_800_000;
 
     log.info("redeploy webhook received");
 

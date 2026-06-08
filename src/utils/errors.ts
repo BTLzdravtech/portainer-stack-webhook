@@ -22,7 +22,9 @@ export class ApiError extends Error {
     return new JsonResponse(this.status, {
       message: this.message,
       ...this.details,
-      stack: this.jsonStack,
+      // Only expose the stack trace when explicitly debugging — avoids leaking
+      // internal stack traces to clients in production.
+      ...(process.env.LOG_LEVEL === "debug" ? { stack: this.jsonStack } : {}),
     });
   }
 }

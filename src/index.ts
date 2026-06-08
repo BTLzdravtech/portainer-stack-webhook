@@ -8,12 +8,8 @@ import { startServer } from "./utils/server";
 const port = Number(process.env.PORT || 3000);
 const log = createLogger();
 
-console.log(`${bold(cyan("Portainer Stack Webhooks"))} ${dim(`v${version}`)}`);
-console.log(
-  `${cyan("ℹ")} Server started ${dim("→")} ${violet(
-    `http://localhost:${port}`,
-  )}`,
-);
+log.info(`${bold(cyan("Portainer Stack Webhooks"))} ${dim(`v${version}`)}`);
+log.info(`server started ${dim("→")} ${violet(`http://localhost:${port}`)}`);
 
 const server = startServer({
   port,

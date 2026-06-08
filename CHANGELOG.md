@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.2.0
+
+[compare changes](https://github.com/BTLzdravtech/portainer-stack-webhook/compare/v0.1.7...v0.2.0)
+
+### 🚀 Enhancements
+
+- Authenticate by forwarding the caller's `X-API-Key` header to Portainer ([c61c5ce](https://github.com/BTLzdravtech/portainer-stack-webhook/commit/c61c5ce))
+- Re-pull images and redeploy via `repullImageAndRedeploy` ([fd6563d](https://github.com/BTLzdravtech/portainer-stack-webhook/commit/fd6563d))
+- Wait for Portainer's asynchronous redeploy to finish — poll stack status until active, returning `502` on error and `504` on timeout ([2afa2ec](https://github.com/BTLzdravtech/portainer-stack-webhook/commit/2afa2ec))
+- Thorough colored logging across requests and the async polling lifecycle, tunable via `LOG_LEVEL` ([2e49d14](https://github.com/BTLzdravtech/portainer-stack-webhook/commit/2e49d14))
+- Production readiness: unauthenticated `/health` endpoint + Docker `HEALTHCHECK`, graceful `SIGTERM`/`SIGINT` shutdown, clean `500`/`400` error handling, and `NO_COLOR`/TTY-aware logs ([f505c88](https://github.com/BTLzdravtech/portainer-stack-webhook/commit/f505c88))
+
+### 🏡 Chore
+
+- Set up Biome linting/formatting and fix surfaced type/test errors ([eed3761](https://github.com/BTLzdravtech/portainer-stack-webhook/commit/eed3761))
+
+### 📖 Documentation
+
+- Add `CLAUDE.md` and align auth docs with the `X-API-Key` model ([a955415](https://github.com/BTLzdravtech/portainer-stack-webhook/commit/a955415))
+
 ## v0.1.7
 
 [compare changes](https://github.com/aklinker1/portainer-stack-webhook/compare/v0.1.6...v0.1.7)
