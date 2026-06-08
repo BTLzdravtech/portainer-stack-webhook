@@ -14,15 +14,17 @@ services:
       - 3000:3000
     environment:
       BASE_URL: https://portainer.example.com/api # Required, full URL including /api
-      USERNAME: your-username                     # Required, username to login with
-      PASSWORD: your-password                     # Required, password to login with
       PORT: 3000                                  # Optional, default 3000
 ```
+
+Authentication is per-request: every request must include an `X-API-Key` header containing a [Portainer API access token](https://docs.portainer.io/api/access). The token is forwarded to your Portainer instance, so the webhook performs whatever actions that token is allowed to.
 
 To tell Portainer to pull the latest images and update the stack, make a simple POST request:
 
 ```sh
-curl -X POST http://localhost:3000/api/webhook/stacks/:stackId
+curl -X POST \
+  -H "X-API-Key: your-portainer-api-token" \
+  http://localhost:3000/api/webhook/stacks/:stackId
 ```
 
 > [!NOTE]
@@ -52,7 +54,9 @@ To run:
    ```
 3. Send a request to test it out
    ```sh
-   curl -X POST http://localhost:3000/api/webhook/stacks/123
+   curl -X POST \
+     -H "X-API-Key: your-portainer-api-token" \
+     http://localhost:3000/api/webhook/stacks/123
    ```
 
 You can also run tests:
